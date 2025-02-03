@@ -1,0 +1,80 @@
+#title {
+    text-align: center;
+    font-size: 50px;
+  }
+  
+  #description {
+    font-size: 25px;
+    text-align: center; 
+  }
+  
+  body {
+    background-image: url(https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+    color: white;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.4;
+    margin: 0; /
+  }
+  
+  p {
+    font-size: 20px;
+  }
+  
+  #survey-form {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.6); 
+  }
+  
+  form label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 20px;
+    text-align: left;
+  }
+  
+  form input,
+  form select,
+  form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .checkbox-container,
+  .radio-container {
+    display: flex;
+    align-items: center;
+    gap: 5px; 
+    margin-bottom: 5px; 
+  }
+  
+  form input[type="checkbox"],
+  form input[type="radio"] {
+    width: 16px;
+    height: 16px;
+  }
+  
+  #submit {
+    background-color: aqua;
+    width: 200px;
+    padding: 10px 20px;
+    font-size: 20px;
+    border: none;
+    border-radius: 5px;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  
+  ** end of undefined **
+  
+  

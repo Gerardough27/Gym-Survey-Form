@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Gym Survey Form</title>
+  <link rel="stylesheet" href="styles.css"> 
+</head>
+
+<body>  
+<h1 id="title"> Gym Survey Form</h1>
+<p id="description">Let us know about your experience at our gym!</p>  
+<form id="survey-form">
+
+<div>
+  <label id="name-label" for="name">Name</label>
+  <input id="name" type="text" placeholder="Full Name" required> 
+
+</div>
+  
+<div>
+  <label id="email-label" for="email">Email</label>
+  <input type="email" id="email" placeholder="email@gmail.com" required>
+</div>
+
+<div>
+  <label id="number-label" for="number">Age</label>
+  <input type="number" id="number" min="0" max="100" placeholder="Age" >
+</div>
+
+<div>
+  <label id="dropdown-label" for="dropdown">How long have you been a member?</label>
+  <select id="dropdown">
+    <option value=""> (choose one)</option>
+    <option value="1"> Less than one year</option>
+    <option value="2"> 1 Year</option>
+    <option value="3"> 2 Years</option>
+    <option value="4"> 3 Years</option>
+    <option value="5"> 4 Years</option>
+    <option value="6"> 5+ Years</option>  
+  </select>
+</div>
+
+<div>
+  <p>What Location were you at?</p>
+  <label><input type="radio" value="NJ" name="location">New Jersey</label>
+  <label><input type="radio" value="NY" name="location">New York</label>
+  <label><input type="radio" value="CA" name="location">California</label>
+  <label><input type="radio" value="FL" name="location">Florida</label>
+</div>
+
+<div>
+  <p>What is your favorite part about our gym?</p>
+  <label><input name="favorite" type="checkbox" value="Weightroom">Weightroom</label>
+  <label><input name="favorite" type="checkbox" value="pool">Pool</label>
+  <label><input name="favorite" type="checkbox" value="spa">Spa</label>
+  <label><input name="favorite" type="checkbox" value="personal-training">Personal Training</label>
+  <label><input name="favorite" type="checkbox" value="Group-Fitness">Group Fitness</label>
+</div>
+
+<div>
+  <p>Any Feedback that you would like to share?</p>
+  <textarea id="comment" class="input-textarea" name="comment" placeholder="Enter your comment here..."></textarea>
+</div>
+
+<div>
+  <button type="submit" id="submit" class="Submit-Button">Submit</button>
+</div>
+  
+</form>
+</body>
+</html>
