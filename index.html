@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elder Care Homecare — Locations</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root {
     --navy: #1b2a4a;
@@ -24,99 +25,82 @@
   header {
     background: var(--navy);
     color: #fff;
-    padding: 2.5rem 1.5rem 2rem;
+    padding: 2rem 1.5rem 1.6rem;
     text-align: center;
   }
-  header h1 {
-    margin: 0 0 0.4rem;
-    font-size: 1.9rem;
-  }
-  header p {
-    margin: 0;
-    color: #c7d0e0;
-    font-size: 1rem;
+  header h1 { margin: 0 0 0.4rem; font-size: 1.9rem; }
+  header p { margin: 0; color: #c7d0e0; font-size: 1rem; }
+  .note {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 1.25rem 0;
+    color: var(--muted);
+    font-size: 0.85rem;
   }
   main {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
-  }
-  .state-group {
-    margin-bottom: 2.5rem;
-  }
-  .state-group h2 {
-    font-size: 1.15rem;
-    color: var(--navy);
-    border-bottom: 2px solid var(--teal);
-    padding-bottom: 0.4rem;
-    margin-bottom: 1rem;
-  }
-  .cards {
+    padding: 1.25rem 1.25rem 3rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: 340px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+  @media (max-width: 850px) {
+    main { grid-template-columns: 1fr; }
+  }
+  #map {
+    height: 620px;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  #sidebar {
+    max-height: 620px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     gap: 1.25rem;
   }
-  .card {
+  .state-group h2 {
+    font-size: 1rem;
+    color: var(--navy);
+    border-bottom: 2px solid var(--teal);
+    padding-bottom: 0.35rem;
+    margin: 0 0 0.6rem;
+  }
+  .loc-item {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border-radius: 8px;
+    padding: 0.65rem 0.8rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
   }
-  .card iframe {
-    width: 100%;
-    height: 170px;
-    border: 0;
-    display: block;
-    background: #eee;
-  }
-  .card-body {
-    padding: 0.9rem 1rem 1.1rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .card-body h3 {
-    margin: 0 0 0.35rem;
-    font-size: 1.02rem;
-    color: var(--navy);
-  }
-  .card-body address {
+  .loc-item:hover { border-color: var(--teal); }
+  .loc-item.pending { opacity: 0.55; cursor: default; }
+  .loc-item h3 { margin: 0 0 0.2rem; font-size: 0.92rem; color: var(--navy); }
+  .loc-item address {
     font-style: normal;
     color: var(--muted);
-    font-size: 0.9rem;
-    line-height: 1.35;
-    margin-bottom: 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.3;
   }
-  .card-body a.directions {
-    margin-top: auto;
+  .loc-item .status { font-size: 0.72rem; color: var(--teal); margin-top: 0.25rem; }
+  .loc-item a.directions {
     display: inline-block;
-    text-align: center;
-    background: var(--teal);
-    color: #fff;
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--teal);
     text-decoration: none;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
     font-weight: 600;
   }
-  .card-body a.directions:hover {
-    background: #257575;
-  }
+  .loc-item a.directions:hover { text-decoration: underline; }
   footer {
     text-align: center;
     color: var(--muted);
     font-size: 0.82rem;
     padding: 1.5rem;
-  }
-  .note {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 1.25rem;
-    color: var(--muted);
-    font-size: 0.85rem;
   }
 </style>
 </head>
@@ -127,77 +111,136 @@
   <p>12 offices serving New York, New Jersey, Connecticut, Massachusetts &amp; Rhode Island</p>
 </header>
 
-<p class="note">Sourced from Elder Care Homecare's verified Google Business Profile listings. Each map below is geocoded live by Google from the listed address.</p>
+<p class="note">Office names and addresses come from Elder Care Homecare's verified Google Business Profile listings. Map coordinates are geocoded live by OpenStreetMap (Nominatim) in your browser when this page loads — dots may take a moment to appear.</p>
 
-<main id="locations"></main>
+<main>
+  <div id="map"></div>
+  <div id="sidebar"></div>
+</main>
 
 <footer>
   &copy; <span id="year"></span> Elder Care Homecare. Location data reflects Google Business Profile listings current as of publish date.
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
   const locations = [
-    { state: "New York", name: "Elder Care Homecare – NYC", address: "389 5th Ave, Rm 500, New York, NY 10016" },
-    { state: "New York", name: "Elder Care Homecare – Westchester", address: "440 Mamaroneck Ave, Ste 203, Harrison, NY 10528" },
-    { state: "New York", name: "Elder Care Homecare – Westbury", address: "1025 Old Country Rd, Ste 314, Westbury, NY 11590" },
-    { state: "New York", name: "Elder Care Homecare – Medford", address: "3080 Rte 112, Suite A, Medford, NY 11763" },
+    { state: "New York", name: "Elder Care Homecare – NYC", address: "389 5th Ave, New York, NY 10016" },
+    { state: "New York", name: "Elder Care Homecare – Westchester", address: "440 Mamaroneck Ave, Harrison, NY 10528" },
+    { state: "New York", name: "Elder Care Homecare – Westbury", address: "1025 Old Country Rd, Westbury, NY 11590" },
+    { state: "New York", name: "Elder Care Homecare – Medford", address: "3080 Rte 112, Medford, NY 11763" },
 
     { state: "New Jersey", name: "Elder Care Homecare – Saddle Brook", address: "299 Market Street, Saddle Brook, NJ 07663" },
-    { state: "New Jersey", name: "Elder Care Homecare – Iselin", address: "33 S Wood Ave, Suite 426, Iselin, NJ 08830" },
+    { state: "New Jersey", name: "Elder Care Homecare – Iselin", address: "33 S Wood Ave, Iselin, NJ 08830" },
 
     { state: "Connecticut", name: "Elder Care Homecare – Stamford", address: "750 E Main St, Stamford, CT 06902" },
-    { state: "Connecticut", name: "Elder Care Homecare – Hartford", address: "175 Capital Blvd, Suite 441, Rocky Hill, CT 06067" },
+    { state: "Connecticut", name: "Elder Care Homecare – Hartford", address: "175 Capital Blvd, Rocky Hill, CT 06067" },
     { state: "Connecticut", name: "Elder Care Homecare – New London", address: "240 Williams St, New London, CT 06320" },
 
-    { state: "Massachusetts", name: "Elder Care Homecare – Canton", address: "One New Boston Drive, Suite 7, Canton, MA 02021" },
+    { state: "Massachusetts", name: "Elder Care Homecare – Canton", address: "One New Boston Drive, Canton, MA 02021" },
     { state: "Massachusetts", name: "Elder Care Homecare – Plymouth", address: "15 Richards Rd, Plymouth, MA 02360" },
 
     { state: "Rhode Island", name: "Elder Care Homecare – Westerly", address: "1a Chamber Way, Westerly, RI 02891" }
   ];
 
+  // Full addresses (with suite numbers) shown in the sidebar and used for directions links.
+  const displayAddress = {
+    "Elder Care Homecare – NYC": "389 5th Ave, Rm 500, New York, NY 10016",
+    "Elder Care Homecare – Westchester": "440 Mamaroneck Ave, Ste 203, Harrison, NY 10528",
+    "Elder Care Homecare – Westbury": "1025 Old Country Rd, Ste 314, Westbury, NY 11590",
+    "Elder Care Homecare – Medford": "3080 Rte 112, Suite A, Medford, NY 11763",
+    "Elder Care Homecare – Saddle Brook": "299 Market Street, Saddle Brook, NJ 07663",
+    "Elder Care Homecare – Iselin": "33 S Wood Ave, Suite 426, Iselin, NJ 08830",
+    "Elder Care Homecare – Stamford": "750 E Main St, Stamford, CT 06902",
+    "Elder Care Homecare – Hartford": "175 Capital Blvd, Suite 441, Rocky Hill, CT 06067",
+    "Elder Care Homecare – New London": "240 Williams St, New London, CT 06320",
+    "Elder Care Homecare – Canton": "One New Boston Drive, Suite 7, Canton, MA 02021",
+    "Elder Care Homecare – Plymouth": "15 Richards Rd, Plymouth, MA 02360",
+    "Elder Care Homecare – Westerly": "1a Chamber Way, Westerly, RI 02891"
+  };
+
   const stateOrder = ["New York", "New Jersey", "Connecticut", "Massachusetts", "Rhode Island"];
 
-  const main = document.getElementById("locations");
+  const map = L.map('map').setView([41.4, -73.2], 8);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  const sidebar = document.getElementById('sidebar');
+  const markers = {};
+  const bounds = [];
 
   stateOrder.forEach(state => {
     const group = locations.filter(loc => loc.state === state);
     if (!group.length) return;
 
-    const section = document.createElement("section");
-    section.className = "state-group";
-
-    const heading = document.createElement("h2");
-    heading.textContent = `${state} (${group.length})`;
-    section.appendChild(heading);
-
-    const cards = document.createElement("div");
-    cards.className = "cards";
+    const section = document.createElement('div');
+    section.className = 'state-group';
+    section.innerHTML = `<h2>${state} (${group.length})</h2>`;
 
     group.forEach(loc => {
-      const encoded = encodeURIComponent(loc.address);
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <iframe
-          src="https://maps.google.com/maps?q=${encoded}&output=embed"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          title="Map for ${loc.name}">
-        </iframe>
-        <div class="card-body">
-          <h3>${loc.name}</h3>
-          <address>${loc.address}</address>
-          <a class="directions" href="https://www.google.com/maps/dir/?api=1&destination=${encoded}" target="_blank" rel="noopener noreferrer">Get Directions</a>
-        </div>
+      const full = displayAddress[loc.name] || loc.address;
+      const encoded = encodeURIComponent(full);
+      const item = document.createElement('div');
+      item.className = 'loc-item pending';
+      item.id = `item-${slug(loc.name)}`;
+      item.innerHTML = `
+        <h3>${loc.name}</h3>
+        <address>${full}</address>
+        <div class="status">Locating on map…</div>
+        <a class="directions" href="https://www.openstreetmap.org/search?query=${encoded}" target="_blank" rel="noopener noreferrer">Get Directions</a>
       `;
-      cards.appendChild(card);
+      item.addEventListener('click', () => {
+        const m = markers[loc.name];
+        if (m) { map.flyTo(m.getLatLng(), 14); m.openPopup(); }
+      });
+      section.appendChild(item);
     });
 
-    section.appendChild(cards);
-    main.appendChild(section);
+    sidebar.appendChild(section);
   });
 
-  document.getElementById("year").textContent = new Date().getFullYear();
+  function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, '-'); }
+
+  async function geocode(address) {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('geocode failed');
+    const data = await res.json();
+    if (!data.length) throw new Error('no result');
+    return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  async function placeAll() {
+    for (const loc of locations) {
+      const item = document.getElementById(`item-${slug(loc.name)}`);
+      try {
+        const { lat, lon } = await geocode(loc.address);
+        const marker = L.marker([lat, lon]).addTo(map)
+          .bindPopup(`<strong>${loc.name}</strong><br>${displayAddress[loc.name] || loc.address}`);
+        markers[loc.name] = marker;
+        bounds.push([lat, lon]);
+        if (item) {
+          item.classList.remove('pending');
+          item.querySelector('.status').textContent = '';
+        }
+        if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+      } catch (e) {
+        if (item) {
+          item.querySelector('.status').textContent = 'Map location unavailable';
+          item.querySelector('.status').style.color = '#b33';
+        }
+      }
+      await sleep(1100); // respect Nominatim's usage policy (max ~1 req/sec)
+    }
+  }
+
+  placeAll();
+
+  document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 
 </body>
