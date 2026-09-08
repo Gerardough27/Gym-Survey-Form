@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elder Care Homecare — Locations</title>
+<style>
+  :root {
+    --navy: #1b2a4a;
+    --teal: #2f8f8f;
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --text: #1f2430;
+    --muted: #6b7280;
+    --border: #e3e6ea;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 0.4rem;
+    font-size: 1.9rem;
+  }
+  header p {
+    margin: 0;
+    color: #c7d0e0;
+    font-size: 1rem;
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  .state-group {
+    margin-bottom: 2.5rem;
+  }
+  .state-group h2 {
+    font-size: 1.15rem;
+    color: var(--navy);
+    border-bottom: 2px solid var(--teal);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card iframe {
+    width: 100%;
+    height: 170px;
+    border: 0;
+    display: block;
+    background: #eee;
+  }
+  .card-body {
+    padding: 0.9rem 1rem 1.1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-body h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.02rem;
+    color: var(--navy);
+  }
+  .card-body address {
+    font-style: normal;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+  }
+  .card-body a.directions {
+    margin-top: auto;
+    display: inline-block;
+    text-align: center;
+    background: var(--teal);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .card-body a.directions:hover {
+    background: #257575;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
+    padding: 1.5rem;
+  }
+  .note {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Elder Care Homecare® — Our Locations</h1>
+  <p>12 offices serving New York, New Jersey, Connecticut, Massachusetts &amp; Rhode Island</p>
+</header>
+
+<p class="note">Sourced from Elder Care Homecare's verified Google Business Profile listings. Each map below is geocoded live by Google from the listed address.</p>
+
+<main id="locations"></main>
+
+<footer>
+  &copy; <span id="year"></span> Elder Care Homecare. Location data reflects Google Business Profile listings current as of publish date.
+</footer>
+
+<script>
+  const locations = [
+    { state: "New York", name: "Elder Care Homecare – NYC", address: "389 5th Ave, Rm 500, New York, NY 10016" },
+    { state: "New York", name: "Elder Care Homecare – Westchester", address: "440 Mamaroneck Ave, Ste 203, Harrison, NY 10528" },
+    { state: "New York", name: "Elder Care Homecare – Westbury", address: "1025 Old Country Rd, Ste 314, Westbury, NY 11590" },
+    { state: "New York", name: "Elder Care Homecare – Medford", address: "3080 Rte 112, Suite A, Medford, NY 11763" },
+
+    { state: "New Jersey", name: "Elder Care Homecare – Saddle Brook", address: "299 Market Street, Saddle Brook, NJ 07663" },
+    { state: "New Jersey", name: "Elder Care Homecare – Iselin", address: "33 S Wood Ave, Suite 426, Iselin, NJ 08830" },
+
+    { state: "Connecticut", name: "Elder Care Homecare – Stamford", address: "750 E Main St, Stamford, CT 06902" },
+    { state: "Connecticut", name: "Elder Care Homecare – Hartford", address: "175 Capital Blvd, Suite 441, Rocky Hill, CT 06067" },
+    { state: "Connecticut", name: "Elder Care Homecare – New London", address: "240 Williams St, New London, CT 06320" },
+
+    { state: "Massachusetts", name: "Elder Care Homecare – Canton", address: "One New Boston Drive, Suite 7, Canton, MA 02021" },
+    { state: "Massachusetts", name: "Elder Care Homecare – Plymouth", address: "15 Richards Rd, Plymouth, MA 02360" },
+
+    { state: "Rhode Island", name: "Elder Care Homecare – Westerly", address: "1a Chamber Way, Westerly, RI 02891" }
+  ];
+
+  const stateOrder = ["New York", "New Jersey", "Connecticut", "Massachusetts", "Rhode Island"];
+
+  const main = document.getElementById("locations");
+
+  stateOrder.forEach(state => {
+    const group = locations.filter(loc => loc.state === state);
+    if (!group.length) return;
+
+    const section = document.createElement("section");
+    section.className = "state-group";
+
+    const heading = document.createElement("h2");
+    heading.textContent = `${state} (${group.length})`;
+    section.appendChild(heading);
+
+    const cards = document.createElement("div");
+    cards.className = "cards";
+
+    group.forEach(loc => {
+      const encoded = encodeURIComponent(loc.address);
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <iframe
+          src="https://maps.google.com/maps?q=${encoded}&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Map for ${loc.name}">
+        </iframe>
+        <div class="card-body">
+          <h3>${loc.name}</h3>
+          <address>${loc.address}</address>
+          <a class="directions" href="https://www.google.com/maps/dir/?api=1&destination=${encoded}" target="_blank" rel="noopener noreferrer">Get Directions</a>
+        </div>
+      `;
+      cards.appendChild(card);
+    });
+
+    section.appendChild(cards);
+    main.appendChild(section);
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
